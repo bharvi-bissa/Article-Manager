@@ -1,0 +1,17 @@
+<% include header %>
+<div class="fixed-action-btn">
+    <a href="/articles/add" class="btn-floating btn-large red">
+      <i class="large material-icons">mode_edit</i>
+    </a>
+  </div>
+<div class="container">
+  <h3><%= title %></h3> 
+  <ul class="collection">
+    <% articles.forEach(function(article){ %>
+      <li class="collection-item">
+        <a href='article/<%= article._id %>'><%- article.title %></a>
+      </li>
+    <% }); %>
+  </ul>
+</div>
+<% include footer %>
