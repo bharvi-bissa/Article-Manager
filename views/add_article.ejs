@@ -5,19 +5,19 @@
     <form action="/articles/add" method="post">
       <div class="row">
         <div class="input-field col s12 ">
-          <input id="title" type="text" class="validate" name="title">
+          <input id="title" type="text" class="validate" name="title" required>
           <label for="title">Title</label>
         </div>
       </div>
       <div class="row">
         <div class="input-field col s12 ">
-            <input id="author" type="text" class="validate" name="author">
+            <input id="author" type="text" class="validate" name="author" required>
             <label for="author">Author</label>
         </div>
       </div>
       <div class="row">
         <div class="input-field col s12">
-          <textarea id="body" class="materialize-textarea" name="body"></textarea>
+          <textarea id="body" class="materialize-textarea" name="body" required></textarea>
           <label for="body">Body</label>
         </div>
       </div>
