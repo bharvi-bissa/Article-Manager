@@ -15,3 +15,7 @@ main {
   width: 50%;
   margin: 1% auto;
 }
+
+input.waves-button-input{
+  color:white;
+}

@@ -1,0 +1,23 @@
+<% include header %>
+<div class="container">
+  <h4><%= title %></h4>
+  <br>
+  <form action="/user/login" method="post">
+    <div class="row">
+        <div class="input-field col s12 ">
+            <input id="username" type="text" class="validate" name="username" required>
+            <label for="username">Username</label>
+        </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 ">
+        <input id="password" type="password" class="validate" name="password" required>
+        <label for="password">Password</label>
+      </div>
+    </div>
+    <div class="row">
+      <input class="waves-effect waves-light btn white-text" type="submit" value="Login">
+    </div>
+  </form>
+</div>
+<% include footer %>

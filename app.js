@@ -5,7 +5,11 @@ const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
-mongoose.connect('mongodb://localhost/nodekb');
+const bcrypt = require('bcryptjs');
+const config = require('./config/database');
+const passport = require('passport');
+//mongoose.connect('mongodb://localhost/nodekb');
+mongoose.connect(config.database);
 let db = mongoose.connection;
 //check connection
 db.once('open',function(){
@@ -19,7 +23,7 @@ db.on('error',function(err){
 const app = express();
 //bring in models
 let Article = require('./models/article');
-
+let User = require('./models/user');
 app.set('views',path.join(__dirname,'views'));
 app.set('view engine','ejs');
 // parse application/x-www-form-urlencoded
@@ -56,6 +60,18 @@ app.use(expressValidator({
     };
   }
 }));
+
+//passport config
+require('./config/passport')(passport);
+//passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('*',function(req,res,next){
+  res.locals.user = req.user || null ;
+  //console.log(res.locals.user);
+  next();
+});
 
 // parse application/json
 app.use(bodyParser.json());
@@ -162,7 +178,88 @@ app.delete('/article/delete/:id',function(req,res){
     }
     res.send('success');
   });
-})
+});
+
+// register route 
+app.get('/user/register',function(req,res){
+  res.render('register',{
+    title : 'Register'
+  });
+});
+
+// register process
+app.post('/user/register',function(req,res){
+  const name = req.body.name;
+  const email = req.body.email;
+  const username = req.body.username;
+  const password = req.body.password;
+  const password2 = req.body.password2;
+
+  req.checkBody('name','Name is required').notEmpty();
+  req.checkBody('email','email is required').notEmpty();
+  req.checkBody('email','Enter Vaild Email').isEmail();
+  req.checkBody('username','username is required').notEmpty();
+  req.checkBody('password','password is required').notEmpty();
+  req.checkBody('password2','confirm password is required').notEmpty();
+  req.checkBody('password2','Passwords donot match').equals(req.body.password);
+
+  let errors = req.validationErrors();
+  if(errors){
+    console.log(errors);
+    res.render('register',{
+      errors:errors,
+      title : 'Register'
+    });
+  }
+  else{
+    let newUser = new User({
+      name : name,
+      username: username,
+      email : email,
+      password : password
+    });
+    bcrypt.genSalt(10,function(err,salt){
+      bcrypt.hash(newUser.password,salt,function(err,hash){
+        if(err){
+          console.log(err)
+        }
+        newUser.password = hash;
+        newUser.save(function(err){
+          if(err){
+            console.log(err);
+            return;
+          }
+          else{
+            req.flash('success','You are now registered and can log in');
+            res.redirect('/user/login');
+          }
+        });
+      });
+    });
+  }
+});
+
+app.get('/user/login',function(req,res){
+  res.render('login',{
+    title : 'Login'
+  });
+});
+
+app.post('/user/login',function(req,res,next){
+  passport.authenticate('local',{
+    successRedirect:'/',
+    failureRedirect : '/user/login',
+    failureFlash : true
+  })(req,res,next);
+});
+
+//logout
+app.get('/logout',function(req,res){
+  req.logout();
+  req.flash('success','You are logged out');
+  res.redirect('/user/login');
+});
+
 app.listen(3000,function(){
   console.log('server started on port 3000');
  

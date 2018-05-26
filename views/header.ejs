@@ -17,15 +17,27 @@
     <nav class="teal">
       <div class="container">
         <div class="nav-wrapper">
-          <a href="/" class="brand-logo">Article Manager</a>
+          <a href="/" class="brand-logo">ArticleManager</a>
           <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
            <ul class="right hide-on-med-and-down">
             <li>
-              <a href="/">Home</a>
-              </li>
+            <a href="/">Home</a>
+            </li>
+            <% if (user) { %>
               <li>
               <a href="/articles/add">Add Article</a>
               </li>
+              <li>
+                <a href = "/logout">Logout</a>
+              </li>
+            <% } else { %>
+            <li>
+              <a href="/user/register">Register</a>
+            </li>
+            <li>
+              <a href="/user/login">Login</a>
+            </li>
+            <% } %>
             </ul>
         </div>
       </div>
@@ -37,6 +49,12 @@
     </li>
     <li>
       <a href="/articles/add">Add Article</a>
+    </li>
+    <li>
+      <a href="/user/register">Register</a>
+    </li>
+    <li>
+      <a href="/user/login">Login</a>
     </li>
   </ul>
   <%- messages('message', locals) %>
