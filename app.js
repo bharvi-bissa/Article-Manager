@@ -21,9 +21,11 @@ db.on('error',function(err){
   console.log(err);
 });
 const app = express();
+
 //bring in models
 let Article = require('./models/article');
 let User = require('./models/user');
+
 app.set('views',path.join(__dirname,'views'));
 app.set('view engine','ejs');
 // parse application/x-www-form-urlencoded
@@ -93,7 +95,7 @@ app.get('/',function(req,res){
   });
 });
 
-app.get('/articles/add',function(req,res){
+app.get('/articles/add',ensureAuthenticated,function(req,res){
   res.render('add_article',{
     title : 'Add Article'
   });
@@ -101,7 +103,7 @@ app.get('/articles/add',function(req,res){
 
 app.post('/articles/add',function(req,res){
   req.checkBody('title','Title is required').notEmpty();
-  req.checkBody('author','author is required').notEmpty();
+  //req.checkBody('author','author is required').notEmpty();
   req.checkBody('body','body is required').notEmpty();
   
   // get errors
@@ -118,7 +120,7 @@ app.post('/articles/add',function(req,res){
   else{
     let article = new Article();
     article.title = req.body.title;
-    article.author = req.body.author;
+    article.author = req.user._id;
     article.body = req.body.body;
     article.save(function(err){
       if(err){
@@ -131,17 +133,24 @@ app.post('/articles/add',function(req,res){
   }
 });
 // get single article
-app.get('/article/:id',function(req,res){
-  Article.findById(req.params.id,function(err,article){
-    res.render('article',{
-      article:article
+app.get('/article/:id', function(req, res){
+  Article.findById(req.params.id, function(err, article){
+    User.findById(article.author, function(err, user){
+      res.render('article', {
+        article:article,
+        author: user.name
+      });
     });
   });
 });
 
-//edit article
-app.get('/article/edit/:id',function(req,res){
+//edit article form
+app.get('/article/edit/:id',ensureAuthenticated,function(req,res){
   Article.findById(req.params.id,function(err,article){
+    if(article.author != req.user._id){
+      req.flash('danger','Not authorized');
+      res.redirect('/');
+    }
     res.render('edit_article',{
       title : 'Edit Article',
       article:article
@@ -170,13 +179,22 @@ app.post('/articles/edit/:id',function(req,res){
 
 // delete request route
 app.delete('/article/delete/:id',function(req,res){
-  let query = {_id:req.params.id}
+  if(!req.user._id){
+    res.status(500).send();
+  }
 
-  Article.remove(query,function(err){
-    if(err){
-      console.log(err);
+  let query = {_id:req.params.id}
+  Article.findById(req.params.id,function(err,article){
+    if(article.author != req.user._id){
+      res.status(500).send();
+    }else{
+      Article.remove(query,function(err){
+        if(err){
+          console.log(err);
+        }
+        res.send('success');
+      });
     }
-    res.send('success');
   });
 });
 
@@ -259,6 +277,16 @@ app.get('/logout',function(req,res){
   req.flash('success','You are logged out');
   res.redirect('/user/login');
 });
+
+//access control
+function ensureAuthenticated(req,res,next){
+  if(req.isAuthenticated()){
+    return next();
+  }else{
+    req.flash('danger','Please Login');
+    res.redirect('/');
+  }
+}
 
 app.listen(3000,function(){
   console.log('server started on port 3000');

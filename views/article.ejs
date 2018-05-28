@@ -2,11 +2,14 @@
 
 <div class="container">
   <h1><%= article.title %></h1>
-  <h5>Written by <%= article.author %></h5>
+  <h5>Written by <%= author %></h5>
   <p><%= article.body %></p>
   <hr>
+  <% if(user) { %>
+  <% if(user.id == article.author) { %>
   <a href='/article/edit/<%= article._id %>' class="waves-effect waves-light btn">Edit</a>
   <a href='' data-id='<%= article.id %>' class="waves-effect waves-light btn delete-article">Delete</a>
+  <% } } %>
 </div>
 
 <% include footer %>
