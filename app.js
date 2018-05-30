@@ -8,6 +8,9 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const config = require('./config/database');
 const passport = require('passport');
+var uniqueValidator = require('mongoose-unique-validator');
+
+
 //mongoose.connect('mongodb://localhost/nodekb');
 mongoose.connect(config.database);
 let db = mongoose.connection;
@@ -81,6 +84,7 @@ app.use(bodyParser.json());
 //set public folder
 app.use(express.static(path.join(__dirname,'public')));
 
+//get index page and send the articles
 app.get('/',function(req,res){
   Article.find({},function(err,articles){
   if(err){
@@ -95,6 +99,7 @@ app.get('/',function(req,res){
   });
 });
 
+//get add articles page
 app.get('/articles/add',ensureAuthenticated,function(req,res){
   res.render('add_article',{
     title : 'Add Article'
@@ -132,6 +137,7 @@ app.post('/articles/add',function(req,res){
     });
   }
 });
+
 // get single article
 app.get('/article/:id', function(req, res){
   Article.findById(req.params.id, function(err, article){
@@ -245,6 +251,10 @@ app.post('/user/register',function(req,res){
         newUser.save(function(err){
           if(err){
             console.log(err);
+            if(err.code === 11000){
+              req.flash('danger','Email already exists');
+              res.redirect('/user/login');
+            }
             return;
           }
           else{
