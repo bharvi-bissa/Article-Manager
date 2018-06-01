@@ -14,7 +14,7 @@
 </head>
 <body>
   <div class="navbar-fixed">
-    <nav class="teal">
+    <nav class="light-blue darken-2">
       <div class="container">
         <div class="nav-wrapper">
           <a href="/" class="brand-logo">ArticleManager</a>
@@ -29,6 +29,9 @@
               </li>
               <li>
                 <a href = "/logout">Logout</a>
+              </li>
+              <li>
+                <a href = "/user/profile/">Hi <%= user.name %> !</a>
               </li>
             <% } else { %>
             <li>
@@ -49,7 +52,10 @@
       </li>
       <% if (user) { %>
         <li>
-        <a href="/articles/add">Add Article</a>
+          <a href="/articles/add">Add Article</a>
+        </li>
+         <li>
+          <a href = "/user/profile/">Hi <%= user.name %> !</a>
         </li>
         <li>
           <a href = "/logout">Logout</a>

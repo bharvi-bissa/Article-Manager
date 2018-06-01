@@ -298,6 +298,37 @@ function ensureAuthenticated(req,res,next){
   }
 }
 
+
+app.get('/user/dashboard',function(req,res){
+  res.render('user_dashboard',{
+    title : 'Dashboard'
+  });
+});
+
+app.get('/user/profile',ensureAuthenticated,function(req,res){
+  res.render('user_profile',{
+    title : 'Profile'
+  });
+});
+
+app.post('/user/profile/edit/:id',function(req,res){
+  let updatesUser = {};
+  updatesUser.username = req.body.username;
+  updatesUser.name = req.body.name;
+  updatesUser.email = req.body.email;
+
+  let query = {_id:req.params.id}
+
+  User.update(query,updatesUser,function(err){
+    if(err){
+      console.log(err);
+    }else{
+      req.flash('success','User Updated');
+      res.redirect('/');
+    }
+  });
+});
+
 app.listen(3000,function(){
   console.log('server started on port 3000');
  

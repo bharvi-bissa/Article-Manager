@@ -19,3 +19,8 @@ main {
 input.waves-button-input{
   color:white;
 }
+
+input .waves-effect .waves-light .btn  {
+  background-color: #4fc3f7;
+  color: white;
+}
