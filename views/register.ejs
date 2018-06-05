@@ -3,7 +3,7 @@
     <h4><%= title %></h4>
     
     <br>
-    <form action="/user/register" method="post">
+    <form action="/user/register" method="post" enctype="multipart/form-data">
       <div class="row">
         <div class="input-field col s12 ">
           <input id="name" type="text" class="validate" name="name" required>
@@ -28,10 +28,23 @@
             <label for="password">Password</label>
         </div>
       </div>
-        <div class="row">
+      <div class="row">
         <div class="input-field col s12 ">
             <input id="password2" type="password" class="validate" name="password2" required>
             <label for="password2">Confirm Password</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12 ">
+         <div class="file-field input-field">
+            <div class="btn white-text light-blue darken-2">
+              <span>Image</span>
+              <input type="file" name="userImage">
+            </div>
+          <div class="file-path-wrapper">
+              <input class="file-path validate" type="text">
+          </div>
+        </div>
         </div>
       </div>
       <div class="row">

@@ -8,7 +8,9 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const config = require('./config/database');
 const passport = require('passport');
-var uniqueValidator = require('mongoose-unique-validator');
+const uniqueValidator = require('mongoose-unique-validator');
+const multer = require('multer');
+//const upload_location = multer({ dest: 'uploads/' });
 
 
 //mongoose.connect('mongodb://localhost/nodekb');
@@ -30,6 +32,9 @@ let Article = require('./models/article');
 let User = require('./models/user');
 
 app.set('views',path.join(__dirname,'views'));
+app.use(express.static('./public'));
+
+//app.set('\ public\ uploads ',express.static(path.join(__dirname,'uploads')));
 app.set('view engine','ejs');
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -40,6 +45,42 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
 }));
+
+
+// multer middleware
+// Set The Storage Engine
+const storage = multer.diskStorage({
+  destination: './public/uploads/',
+  filename: function(req, file, cb){
+    cb(null,file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+});
+
+// Init Upload
+const upload = multer({
+  storage: storage,
+  limits:{fileSize: 1000000},
+  fileFilter: function(req, file, cb){
+    checkFileType(file, cb);
+  }
+});
+
+// Check File Type
+function checkFileType(file, cb){
+  // Allowed ext
+  const filetypes = /jpeg|jpg|png|gif/;
+  // Check ext
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  // Check mime
+  const mimetype = filetypes.test(file.mimetype);
+
+  if(mimetype && extname){
+    return cb(null,true);
+  } else {
+    cb('Error: Images Only!');
+  }
+}
+
 
 // express messages middleware
 app.use(require('connect-flash')());
@@ -212,13 +253,18 @@ app.get('/user/register',function(req,res){
 });
 
 // register process
-app.post('/user/register',function(req,res){
+app.post('/user/register',upload.single('userImage'),function(req,res){
+  console.log(req.file.path);
+  console.log(req.hostname);
   const name = req.body.name;
   const email = req.body.email;
   const username = req.body.username;
   const password = req.body.password;
   const password2 = req.body.password2;
-
+  //const imagePath = req.file.path.replace(/\\/g,"/");
+  const image = req.file.filename;
+  console.log(req.file);
+  //console.log(imagePath);
   req.checkBody('name','Name is required').notEmpty();
   req.checkBody('email','email is required').notEmpty();
   req.checkBody('email','Enter Vaild Email').isEmail();
@@ -240,7 +286,8 @@ app.post('/user/register',function(req,res){
       name : name,
       username: username,
       email : email,
-      password : password
+      password : password,
+      userimage : image
     });
     bcrypt.genSalt(10,function(err,salt){
       bcrypt.hash(newUser.password,salt,function(err,hash){
@@ -306,6 +353,7 @@ app.get('/user/dashboard',function(req,res){
 });
 
 app.get('/user/profile',ensureAuthenticated,function(req,res){
+  const user = 
   res.render('user_profile',{
     title : 'Profile'
   });
@@ -316,7 +364,6 @@ app.post('/user/profile/edit/:id',function(req,res){
   updatesUser.username = req.body.username;
   updatesUser.name = req.body.name;
   updatesUser.email = req.body.email;
-
   let query = {_id:req.params.id}
 
   User.update(query,updatesUser,function(err){
