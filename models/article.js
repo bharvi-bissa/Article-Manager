@@ -12,6 +12,9 @@ let articleSchema =mongoose.Schema({
   body : {
     type : String,
     required : true
+  },
+  articleimage : {
+    type : String
   }
 });
 

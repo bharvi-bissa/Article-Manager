@@ -2,7 +2,7 @@
 <div class="container">
     <h4><%= title %></h4>
     <br>
-    <form action="/articles/add" method="post">
+    <form action="/articles/add" method="post" enctype="multipart/form-data">
       <div class="row">
         <div class="input-field col s12 ">
           <input id="title" type="text" class="validate" name="title" required>
@@ -16,6 +16,24 @@
           <label for="body">Body</label>
         </div>
       </div>
+
+      <div class="row">
+        <div class="input-field col s12 ">
+         <div class="file-field input-field">
+            <div class="btn white-text light-blue darken-2">
+              <span>Image</span>
+              <input type="file" name="articleImage" id="file">
+            </div>
+          <div class="file-path-wrapper">
+              <input class="file-path validate" type="text">
+          </div>
+        </div>
+         </div>
+              <img id="image"/>
+          <div>
+        </div>
+      </div>
+
       <div class="row">
         <input class="waves-effect waves-light btn light-blue darken-2" type="submit">
       </div>

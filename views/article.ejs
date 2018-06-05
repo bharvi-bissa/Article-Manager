@@ -2,6 +2,10 @@
 
 <div class="container">
   <h3><%= article.title %></h3>
+  <br>
+  <div class="center-align">
+    <img src="/uploads/<%= article.articleimage %>" height="200px" width="200px" class="center-align">
+  </div>
   <h5>Written by <%= author %></h5>
   <p><%= article.body %></p>
   <hr>

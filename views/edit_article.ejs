@@ -4,6 +4,11 @@
     <br>
     <form action="/articles/edit/<%= article._id %>" method="post">
       <div class="row">
+        <div class="input-field col s12 center-align">
+          <img src="/uploads/<%= article.articleimage %>" alt="user-image" height="200px" width="200px">
+        </div>
+      </div>
+      <div class="row">
         <div class="input-field col s12 ">
           <input value='<%= article.title %>' id="title" type="text" class="validate" name="title">
           <label for="title">Title</label>

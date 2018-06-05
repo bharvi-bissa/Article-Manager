@@ -147,11 +147,12 @@ app.get('/articles/add',ensureAuthenticated,function(req,res){
   });
 });
 
-app.post('/articles/add',function(req,res){
+app.post('/articles/add',upload.single('articleImage'),function(req,res){
   req.checkBody('title','Title is required').notEmpty();
   //req.checkBody('author','author is required').notEmpty();
   req.checkBody('body','body is required').notEmpty();
-  
+  const image = req.file.filename;
+  console.log(req.file.filename);
   // get errors
   var errors = req.validationErrors();
   console.log(errors);
@@ -168,6 +169,8 @@ app.post('/articles/add',function(req,res){
     article.title = req.body.title;
     article.author = req.user._id;
     article.body = req.body.body;
+    article.articleimage = image;
+    
     article.save(function(err){
       if(err){
         console.log(err);
@@ -211,7 +214,7 @@ app.post('/articles/edit/:id',function(req,res){
   article.title = req.body.title;
   article.author = req.body.author;
   article.body = req.body.body;
-
+  
   let query = {_id:req.params.id}
 
   Article.update(query,article,function(err){
@@ -223,6 +226,8 @@ app.post('/articles/edit/:id',function(req,res){
     }
   });
 });
+
+
 
 // delete request route
 app.delete('/article/delete/:id',function(req,res){
@@ -360,20 +365,26 @@ app.get('/user/profile',ensureAuthenticated,function(req,res){
 });
 
 app.post('/user/profile/edit/:id',function(req,res){
-  let updatesUser = {};
-  updatesUser.username = req.body.username;
-  updatesUser.name = req.body.name;
-  updatesUser.email = req.body.email;
-  let query = {_id:req.params.id}
+      let updateuser = {};
+      updateuser.name = req.body.name;
+      updateuser.username = req.body.username;
+      updateuser.email = req.body.email;
+      
+      let query = {_id:req.params.id}
 
-  User.update(query,updatesUser,function(err){
-    if(err){
-      console.log(err);
-    }else{
-      req.flash('success','User Updated');
-      res.redirect('/');
-    }
-  });
+      User.update(query,updateuser,function(err){
+        if(err){
+          console.log(err);
+          if(err.code === 11000){
+            req.flash('danger','Email already exists');
+            res.redirect('/user/profile/');
+          }
+          return;
+        }else{
+          req.flash('success','User Updated');
+          res.redirect('/');
+        }
+      });
 });
 
 app.listen(3000,function(){

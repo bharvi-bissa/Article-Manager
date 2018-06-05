@@ -3,7 +3,7 @@
     <h4><%= title %></h4>
     
     <br>
-    <form action="/user/profile/edit/<%= user._id %>" method="post" enctype="multipart/form-data">
+    <form action="/user/profile/edit/<%= user._id %>" method="post">
       <div class="row">
        <img src="/uploads/<%= user.userimage %>" alt="user-image" height="100" width="100">
       </div>
@@ -14,17 +14,17 @@
         </div>
       </div>
       <div class="row">
-        <div class="input-field col s12 ">
+          <div class="input-field col s12 ">
             <input id="email" type="text" class="validate" name="email" required value='<%= user.email %>'>
             <label for="email">Email</label>
-        </div>
+          </div>
       </div>
        <div class="row">
-        <div class="input-field col s12 ">
+          <div class="input-field col s12 ">
             <input id="username" type="text" class="validate" name="username" required value='<%= user.username %>'>
             <label for="username">Username</label>
+          </div>
         </div>
-      </div>
       
       <input name:"id" type="hidden" value="<%= user._id %>" >
       <div class="row">
